@@ -78,11 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_query($conn, $insert_order);
             $order_id = mysqli_insert_id($conn);
 
-            // Create order items
+            // Create order items and update stock
             foreach ($order_items as $item) {
                 $subtotal = $item['price'] * $item['quantity'];
+                $pastry_name_escaped = mysqli_real_escape_string($conn, $item['name']);
+
                 $insert_item = "INSERT INTO order_items (order_id, pastry_id, pastry_name, quantity, price, subtotal) 
-                               VALUES ($order_id, {$item['pastry_id']}, '{$item['name']}', {$item['quantity']}, {$item['price']}, $subtotal)";
+                               VALUES ($order_id, {$item['pastry_id']}, '$pastry_name_escaped', {$item['quantity']}, {$item['price']}, $subtotal)";
                 mysqli_query($conn, $insert_item);
 
                 // Deduct stock

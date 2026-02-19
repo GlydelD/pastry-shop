@@ -126,26 +126,26 @@ CREATE TABLE IF NOT EXISTS wishlist (
 -- SAMPLE DATA: Insert sample pastries
 -- ============================================
 INSERT INTO pastries (name, description, price, image_url, category, is_featured, stock_quantity) VALUES
-('Chocolate Croissant', 'Buttery croissant filled with rich dark chocolate', 252.00, 'media/pastries/Chocolate Croissant.jpg', 'Croissants', 1, 50),
-('Strawberry Tart', 'Fresh strawberries on vanilla custard in a crispy shell', 336.00, 'media/pastries/Strawberry Tart.jpg', 'Tarts', 1, 30),
-('Blueberry Muffin', 'Soft muffin bursting with fresh blueberries', 196.00, 'media/pastries/Blueberry Muffin.jpg', 'Muffins', 0, 75),
-('Cinnamon Roll', 'Warm cinnamon roll with cream cheese frosting', 280.00, 'media/pastries/Cinnamon Roll.jpg', 'Rolls', 1, 40),
-('Apple Danish', 'Flaky pastry with caramelized apple filling', 266.00, 'media/pastries/Apple Danish.jpg', 'Danish', 0, 60),
-('Lemon Macaron', 'Delicate French macaron with tangy lemon filling', 168.00, 'media/pastries/Lemon Macaron.jpg', 'Macarons', 1, 100),
-('Red Velvet Cupcake', 'Moist red velvet cake with cream cheese frosting', 238.00, 'media/pastries/Red Velvet Cupcake.jpg', 'Cupcakes', 1, 45),
-('Almond Croissant', 'Flaky croissant filled with almond cream', 294.00, 'media/pastries/Almond Croissant.jpg', 'Croissants', 1, 35),
-('Chocolate Eclair', 'Choux pastry filled with chocolate cream', 308.00, 'media/pastries/Chocolate Eclair.jpg', 'Eclairs', 1, 25),
-('Vanilla Donut', 'Classic glazed donut with vanilla icing', 154.00, 'media/pastries/Vanilla Donut.jpg', 'Donuts', 0, 80),
-('Classic Croissant', 'Traditional French butter croissant, perfectly flaky', 210.00, 'media/pastries/Classic Croissant.jpg', 'Croissants', 0, 55),
-('Raspberry Tart', 'Fresh raspberries with pastry cream in a buttery shell', 350.00, 'media/pastries/Raspberry Tart.jpg', 'Tarts', 1, 28),
-('Chocolate Muffin', 'Double chocolate muffin with chocolate chips', 210.00, 'media/pastries/Chocolate Muffin.jpg', 'Muffins', 0, 70),
-('Pecan Roll', 'Sweet roll topped with caramelized pecans', 308.00, 'media/pastries/Pecan Roll.jpg', 'Rolls', 1, 32),
-('Cheese Danish', 'Flaky Danish pastry with sweet cream cheese filling', 252.00, 'media/pastries/Cheese Danish.jpg', 'Danish', 1, 48),
-('Pistachio Macaron', 'Green pistachio macaron with smooth pistachio ganache', 182.00, 'media/pastries/Pistachio Macaron.jpg', 'Macarons', 0, 90),
-('Vanilla Cupcake', 'Classic vanilla cupcake with buttercream frosting', 210.00, 'media/pastries/Vanilla Cupcake.jpg', 'Cupcakes', 0, 50),
-('Coffee Eclair', 'Light pastry with coffee cream and coffee icing', 294.00, 'media/pastries/Coffee Eclair.jpg', 'Eclairs', 0, 22),
-('Chocolate Donut', 'Rich chocolate donut with chocolate glaze', 168.00, 'media/pastries/Chocolate Donut.jpg', 'Donuts', 0, 85),
-('Banana Nut Muffin', 'Moist banana muffin with walnuts and cinnamon', 196.00, 'media/pastries/Banana Nut Muffin.jpg', 'Muffins', 0, 65)
+('Chocolate Croissant', 'Buttery croissant filled with rich dark chocolate', 252.00, 'media/pastries/Chocolate Croissant.jpg', 'Sweet Pastries', 1, 50),
+('Strawberry Tart', 'Fresh strawberries on vanilla custard in a crispy shell', 336.00, 'media/pastries/Strawberry Tart.jpg', 'Sweet Pastries', 1, 30),
+('Blueberry Muffin', 'Soft muffin bursting with fresh blueberries', 196.00, 'media/pastries/Blueberry Muffin.jpg', 'Sweet Pastries', 0, 75),
+('Cinnamon Roll', 'Warm cinnamon roll with cream cheese frosting', 280.00, 'media/pastries/Cinnamon Roll.jpg', 'Sweet Pastries', 1, 40),
+('Apple Danish', 'Flaky pastry with caramelized apple filling', 266.00, 'media/pastries/Apple Danish.jpg', 'Sweet Pastries', 0, 60),
+('Lemon Macaron', 'Delicate French macaron with tangy lemon filling', 168.00, 'media/pastries/Lemon Macaron.jpg', 'Sweet Pastries', 1, 100),
+('Red Velvet Cupcake', 'Moist red velvet cake with cream cheese frosting', 238.00, 'media/pastries/Red Velvet Cupcake.jpg', 'Sweet Pastries', 1, 45),
+('Almond Croissant', 'Flaky croissant filled with almond cream', 294.00, 'media/pastries/Almond Croissant.jpg', 'Sweet Pastries', 1, 35),
+('Chocolate Eclair', 'Choux pastry filled with chocolate cream', 308.00, 'media/pastries/Chocolate Eclair.jpg', 'Sweet Pastries', 1, 25),
+('Vanilla Donut', 'Classic glazed donut with vanilla icing', 154.00, 'media/pastries/Vanilla Donut.jpg', 'Sweet Pastries', 0, 80),
+('Classic Croissant', 'Traditional French butter croissant, perfectly flaky', 210.00, 'media/pastries/Classic Croissant.jpg', 'Savory Pastries', 0, 55),
+('Raspberry Tart', 'Fresh raspberries with pastry cream in a buttery shell', 350.00, 'media/pastries/Raspberry Tart.jpg', 'Sweet Pastries', 1, 28),
+('Chocolate Muffin', 'Double chocolate muffin with chocolate chips', 210.00, 'media/pastries/Chocolate Muffin.jpg', 'Sweet Pastries', 0, 70),
+('Pecan Roll', 'Sweet roll topped with caramelized pecans', 308.00, 'media/pastries/Pecan Roll.jpg', 'Sweet Pastries', 1, 32),
+('Cheese Danish', 'Flaky Danish pastry with sweet cream cheese filling', 252.00, 'media/pastries/Cheese Danish.jpg', 'Savory Pastries', 1, 48),
+('Pistachio Macaron', 'Green pistachio macaron with smooth pistachio ganache', 182.00, 'media/pastries/Pistachio Macaron.jpg', 'Sweet Pastries', 0, 90),
+('Vanilla Cupcake', 'Classic vanilla cupcake with buttercream frosting', 210.00, 'media/pastries/Vanilla Cupcake.jpg', 'Sweet Pastries', 0, 50),
+('Coffee Eclair', 'Light pastry with coffee cream and coffee icing', 294.00, 'media/pastries/Coffee Eclair.jpg', 'Sweet Pastries', 0, 22),
+('Chocolate Donut', 'Rich chocolate donut with chocolate glaze', 168.00, 'media/pastries/Chocolate Donut.jpg', 'Sweet Pastries', 0, 85),
+('Banana Nut Muffin', 'Moist banana muffin with walnuts and cinnamon', 196.00, 'media/pastries/Banana Nut Muffin.jpg', 'Sweet Pastries', 0, 65)
 ON DUPLICATE KEY UPDATE name = name;
 
 -- ============================================

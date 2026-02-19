@@ -32,6 +32,10 @@ $items_per_page = 12;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $items_per_page;
 
+// Migration logic - ensure consistent categories
+mysqli_query($conn, "UPDATE pastries SET category = 'Savory Pastries' WHERE category = 'Savory'");
+mysqli_query($conn, "UPDATE pastries SET category = 'Sweet Pastries' WHERE category NOT IN ('Savory Pastries', 'Sweet Pastries')");
+
 // Build query for pastries
 $pastries_query = "SELECT * FROM pastries WHERE 1=1";
 if ($search) {
@@ -60,17 +64,22 @@ $total_pages = ceil($total_pastries / $items_per_page);
 $pastries_query .= " LIMIT $offset, $items_per_page";
 $pastries_result = mysqli_query($conn, $pastries_query);
 
-// Get categories
-// Get categories
-$categories_query = "SELECT DISTINCT category FROM pastries ORDER BY category";
-$categories_result = mysqli_query($conn, $categories_query);
-$categories = [];
-while ($row = mysqli_fetch_assoc($categories_result)) {
-    if (!empty($row['category'])) {
-        $categories[] = $row['category'];
-    }
-}
+// Get categories (Hardcoded to 2 as requested)
+$categories = ['Savory Pastries', 'Sweet Pastries'];
 ?>
+
+<style>
+    .order-item-clickable {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    .order-item-clickable:hover {
+        background-color: var(--butter) !important;
+        border-left-color: var(--honey);
+        transform: translateX(5px);
+    }
+</style>
 
 <div class="dashboard-container">
     <div class="dashboard-header"
@@ -302,7 +311,7 @@ while ($row = mysqli_fetch_assoc($categories_result)) {
                 ?>
                 <div class="cart-container">
                     <?php while ($order = mysqli_fetch_assoc($orders_result)): ?>
-                        <div class="cart-item">
+                        <div class="cart-item order-item-clickable" onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
                             <div class="cart-item-details">
                                 <h4>Order #
                                     <?php echo $order['id']; ?>
@@ -314,10 +323,11 @@ while ($row = mysqli_fetch_assoc($categories_result)) {
                                     <?php echo number_format($order['total_amount'], 2); ?>
                                 </p>
                             </div>
-                            <div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                                 <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
                                     <?php echo $order['status']; ?>
                                 </span>
+                                <span style="font-size: 0.8rem; color: var(--warm-brown);">Click to view details</span>
                             </div>
                         </div>
                     <?php endwhile; ?>
@@ -325,6 +335,20 @@ while ($row = mysqli_fetch_assoc($categories_result)) {
             <?php else: ?>
                 <p style="text-align: center; padding: 2rem;">No orders yet. Start shopping!</p>
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="orderDetailsModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-header">
+            <h2 style="font-family: 'Playfair Display', serif;">Order Details #<span id="detailOrderId"></span></h2>
+            <button class="modal-close"
+                onclick="document.getElementById('orderDetailsModal').classList.remove('active')">&times;</button>
+        </div>
+        <div id="orderDetailsContent" style="padding: 1.5rem;">
+            <!-- Content loaded via AJAX -->
         </div>
     </div>
 </div>
@@ -523,4 +547,19 @@ while ($row = mysqli_fetch_assoc($categories_result)) {
     //         loadCart();
     //     }
     // });
+    function viewOrderDetails(orderId) {
+        document.getElementById('detailOrderId').innerText = orderId;
+        document.getElementById('orderDetailsContent').innerHTML = '<div style="text-align: center; padding: 2rem;"><span style="font-size: 2rem;">🥧</span><p>Loading details...</p></div>';
+        document.getElementById('orderDetailsModal').classList.add('active');
+
+        fetch('get_customer_order_details.php?id=' + orderId)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('orderDetailsContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('orderDetailsContent').innerHTML = '<p style="color: var(--raspberry); text-align: center; padding: 2rem;">Error loading details. Please try again.</p>';
+            });
+    }
 </script>

@@ -10,7 +10,7 @@ if (!isset($_GET['id'])) {
 $order_id = intval($_GET['id']);
 
 // Fetch order details including items
-$query = "SELECT o.*, c.first_name, c.last_name, c.email, c.phone, c.address as customer_address
+$query = "SELECT o.*, c.full_name, c.email, c.phone, c.address as customer_address
           FROM orders o 
           LEFT JOIN customers c ON o.customer_id = c.id 
           WHERE o.id = $order_id";
@@ -22,11 +22,8 @@ if (!$order) {
     exit;
 }
 
-// Fetch order items
-$items_query = "SELECT oi.*, p.name, p.price 
-                FROM order_items oi 
-                JOIN pastries p ON oi.pastry_id = p.id 
-                WHERE oi.order_id = $order_id";
+// Fetch order items (Fetch directly from order_items to keep historical data)
+$items_query = "SELECT * FROM order_items WHERE order_id = $order_id";
 $items_result = mysqli_query($conn, $items_query);
 ?>
 
@@ -34,11 +31,13 @@ $items_result = mysqli_query($conn, $items_query);
     <p><strong>Date:</strong>
         <?php echo date('F j, Y g:i A', strtotime($order['order_date'])); ?>
     </p>
-    <p><strong>Status:</strong> <span style="text-transform: capitalize; font-weight: bold;">
+    <p><strong>Status:</strong>
+        <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
             <?php echo $order['status']; ?>
-        </span></p>
+        </span>
+    </p>
     <p><strong>Customer:</strong>
-        <?php echo htmlspecialchars($order['first_name'] . ' ' . $order['last_name']); ?>
+        <?php echo htmlspecialchars($order['full_name']); ?>
     </p>
     <p><strong>Email:</strong>
         <?php echo htmlspecialchars($order['email']); ?>
@@ -49,7 +48,7 @@ $items_result = mysqli_query($conn, $items_query);
     <p><strong>Delivery Address:</strong>
         <?php echo htmlspecialchars($order['delivery_address']); ?>
     </p>
-    <?php if ($order['notes']): ?>
+    <?php if (isset($order['notes']) && $order['notes']): ?>
         <p><strong>Notes:</strong>
             <?php echo nl2br(htmlspecialchars($order['notes'])); ?>
         </p>
@@ -70,7 +69,7 @@ $items_result = mysqli_query($conn, $items_query);
         <?php while ($item = mysqli_fetch_assoc($items_result)): ?>
             <tr style="border-bottom: 1px solid #f9f9f9;">
                 <td style="padding: 0.5rem;">
-                    <?php echo htmlspecialchars($item['name']); ?>
+                    <?php echo htmlspecialchars($item['pastry_name']); ?>
                 </td>
                 <td style="padding: 0.5rem;">₱
                     <?php echo number_format($item['price'], 2); ?>

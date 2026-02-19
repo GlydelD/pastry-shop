@@ -93,7 +93,7 @@ $monthly_customers_result = mysqli_query($conn, $monthly_customers_query);
 $monthly_customers = $monthly_customers_result ? $monthly_customers_result : null;
 
 // Get recent orders
-$recent_orders_query = "SELECT * FROM orders ORDER BY order_date DESC LIMIT 5";
+$recent_orders_query = "SELECT o.*, c.profile_picture FROM orders o LEFT JOIN customers c ON o.customer_id = c.id ORDER BY o.order_date DESC LIMIT 5";
 $recent_orders = mysqli_query($conn, $recent_orders_query);
 
 // Get all users with pagination and search
@@ -111,7 +111,26 @@ if ($search) {
     $count_query .= " WHERE username LIKE '%$search%' OR full_name LIKE '%$search%' OR email LIKE '%$search%'";
 }
 
-$users_query .= " ORDER BY created_at DESC LIMIT $users_per_page OFFSET $offset";
+// Sort logic
+$user_sort = isset($_GET['user_sort']) ? $_GET['user_sort'] : 'newest';
+$sort_sql = "ORDER BY created_at DESC";
+
+switch ($user_sort) {
+    case 'oldest':
+        $sort_sql = "ORDER BY created_at ASC";
+        break;
+    case 'az':
+        $sort_sql = "ORDER BY username ASC";
+        break;
+    case 'za':
+        $sort_sql = "ORDER BY username DESC";
+        break;
+    default:
+        $sort_sql = "ORDER BY created_at DESC";
+        break;
+}
+
+$users_query .= " $sort_sql LIMIT $users_per_page OFFSET $offset";
 
 $users_result = mysqli_query($conn, $users_query);
 $count_result = mysqli_query($conn, $count_query);
@@ -144,7 +163,7 @@ $total_pages = ceil($total_users / $users_per_page);
         }
 
         body {
-            background: #F5EFE6;
+            background: var(--cream);
             font-family: 'Quattrocento', Georgia, serif;
             margin: 0;
             padding: 0;
@@ -171,7 +190,7 @@ $total_pages = ceil($total_users / $users_per_page);
         }
 
         .summary-card {
-            background: #ffffff !important;
+            background: var(--card-bg) !important;
             border-radius: 18px !important;
             padding: 1.4rem 1.5rem !important;
             box-shadow: 0 2px 14px rgba(139, 111, 71, 0.09) !important;
@@ -185,8 +204,16 @@ $total_pages = ceil($total_users / $users_per_page);
         }
 
         .summary-card:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 8px 28px rgba(139, 111, 71, 0.15) !important;
+            transform: translateY(-5px) !important;
+            box-shadow: 0 12px 30px rgba(139, 111, 71, 0.18) !important;
+            border-color: var(--honey) !important;
+        }
+
+        .summary-card-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            display: flex !important;
+            min-width: 0;
         }
 
         .summary-card::after {
@@ -234,7 +261,8 @@ $total_pages = ceil($total_users / $users_per_page);
             font-weight: 500 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
-            color: #9b9b9b !important;
+            color: var(--warm-brown) !important;
+            opacity: 0.7 !important;
         }
 
         /* Card color themes */
@@ -295,7 +323,7 @@ $total_pages = ceil($total_users / $users_per_page);
         }
 
         .chart-container {
-            background: #ffffff !important;
+            background: var(--card-bg) !important;
             border-radius: 18px !important;
             padding: 1.5rem !important;
             box-shadow: 0 2px 14px rgba(139, 111, 71, 0.09) !important;
@@ -319,7 +347,7 @@ $total_pages = ceil($total_users / $users_per_page);
 
         .chart-container h3 {
             font-family: 'Quattrocento', Georgia, serif !important;
-            color: #1a1a1a !important;
+            color: var(--deep-brown) !important;
             margin: 0 !important;
             font-size: 1rem !important;
             font-weight: 700 !important;
@@ -536,37 +564,45 @@ $total_pages = ceil($total_users / $users_per_page);
 
         <!-- Dashboard Summary Cards -->
         <div class="dashboard-summary">
-            <div class="summary-card revenue-card">
-                <div class="summary-icon">🍯</div>
-                <div class="summary-content">
-                    <h3>₱<?php echo number_format($total_revenue, 2); ?></h3>
-                    <p>Total Revenue</p>
+            <a href="orders.php" class="summary-card-link">
+                <div class="summary-card revenue-card" style="width: 100%;">
+                    <div class="summary-icon">🍯</div>
+                    <div class="summary-content">
+                        <h3>₱<?php echo number_format($total_revenue, 2); ?></h3>
+                        <p>Total Revenue</p>
+                    </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="summary-card orders-card">
-                <div class="summary-icon">🍓</div>
-                <div class="summary-content">
-                    <h3><?php echo $orders_today; ?></h3>
-                    <p>Orders Today</p>
+            <a href="orders.php" class="summary-card-link">
+                <div class="summary-card orders-card" style="width: 100%;">
+                    <div class="summary-icon">🍓</div>
+                    <div class="summary-content">
+                        <h3><?php echo $orders_today; ?></h3>
+                        <p>Orders Today</p>
+                    </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="summary-card top-treat-card">
-                <div class="summary-icon">🥐</div>
-                <div class="summary-content">
-                    <h3><?php echo htmlspecialchars($top_treat['name'] ?? 'N/A'); ?></h3>
-                    <p>Top Treat</p>
+            <a href="inventory.php" class="summary-card-link">
+                <div class="summary-card top-treat-card" style="width: 100%;">
+                    <div class="summary-icon">🥐</div>
+                    <div class="summary-content">
+                        <h3><?php echo htmlspecialchars($top_treat['name'] ?? 'N/A'); ?></h3>
+                        <p>Top Treat</p>
+                    </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="summary-card low-stock-card">
-                <div class="summary-icon">🔔</div>
-                <div class="summary-content">
-                    <h3><?php echo $low_stock_items; ?></h3>
-                    <p>Low Stock Items</p>
+            <a href="inventory.php?sort=stock_low" class="summary-card-link">
+                <div class="summary-card low-stock-card" style="width: 100%;">
+                    <div class="summary-icon">🔔</div>
+                    <div class="summary-content">
+                        <h3><?php echo $low_stock_items; ?></h3>
+                        <p>Low Stock Items</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Dashboard Charts -->
@@ -664,142 +700,165 @@ $total_pages = ceil($total_users / $users_per_page);
         </div>
 
         <!-- Recent Orders -->
-        <div class="cart-container">
-            <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Recent Orders</h2>
-            <div class="data-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Customer</th>
-                            <th>Delivery Address</th>
-                            <th>Date</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (mysqli_num_rows($recent_orders) > 0): ?>
-                            <?php while ($order = mysqli_fetch_assoc($recent_orders)): ?>
-                                <tr>
-                                    <td>
-                                        <?php echo htmlspecialchars($order['customer_name']); ?>
-                                    </td>
-                                    <td>
-                                        <?php
-                                        $address = $order['delivery_address'] ?? 'Not provided';
-                                        echo htmlspecialchars(strlen($address) > 50 ? substr($address, 0, 50) . '...' : $address);
-                                        ?>
-                                    </td>
-                                    <td>
-                                        <?php echo date('M d, Y', strtotime($order['order_date'])); ?>
-                                    </td>
-                                    <td>₱
-                                        <?php echo number_format($order['total_amount'], 2); ?>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
-                                            <?php echo $order['status']; ?>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
+        <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Recent Orders</h2>
+        <div class="admin-table-wrapper" style="margin-bottom: 2rem;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Delivery Address</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (mysqli_num_rows($recent_orders) > 0): ?>
+                        <?php while ($order = mysqli_fetch_assoc($recent_orders)): ?>
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 2rem;">No orders yet</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <a href="orders.php" class="btn">View All Orders</a>
-            </div>
-        </div>
-
-        <!-- Users Table -->
-        <div class="cart-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Registered Users</h2>
-                <div class="search-box" style="flex: 0 0 auto; margin: 0;">
-                    <form method="GET" style="display: flex; gap: 0.5rem;">
-                        <input type="text" name="user_search" placeholder="Search users..."
-                            value="<?php echo htmlspecialchars($search); ?>"
-                            style="width: 200px; padding: 0.5rem; border: 2px solid var(--butter); border-radius: 8px;">
-                        <?php if ($search): ?>
-                            <a href="admin_dashboard.php" class="btn-clear">Clear</a>
-                        <?php endif; ?>
-                    </form>
-                </div>
-            </div>
-            <div class="data-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Profile</th>
-                            <th>Username</th>
-                            <th>Full Name</th>
-                            <th>Email</th>
-                            <th>Joined Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (mysqli_num_rows($users_result) > 0): ?>
-                            <?php while ($user = mysqli_fetch_assoc($users_result)): ?>
-                                <tr>
-                                    <td>
+                                <td style="font-weight: 600;">
+                                    <div style="display: flex; align-items: center; gap: 0.8rem;">
                                         <div
-                                            style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #f0f0f0;">
-                                            <?php if (!empty($user['profile_picture'])): ?>
-                                                <img src="../<?php echo htmlspecialchars($user['profile_picture']); ?>"
-                                                    alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                                            style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #f0f0f0; border: 1.5px solid var(--butter); flex-shrink: 0;">
+                                            <?php if (!empty($order['profile_picture'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($order['profile_picture']); ?>" alt=""
+                                                    style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php else: ?>
                                                 <div
-                                                    style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                                    style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
                                                     👤</div>
                                             <?php endif; ?>
                                         </div>
-                                    </td>
-                                    <td><?php echo htmlspecialchars($user['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['full_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['email']); ?></td>
-                                    <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 2rem;">
-                                    <?php if ($search): ?>
-                                        No users found matching "<?php echo htmlspecialchars($search); ?>"
-                                    <?php else: ?>
-                                        No users registered yet
-                                    <?php endif; ?>
+                                        <span><?php echo htmlspecialchars($order['customer_name']); ?></span>
+                                    </div>
+                                </td>
+                                <td style="color: #666; font-size: 0.9rem;">
+                                    <?php
+                                    $address = $order['delivery_address'] ?? 'Not provided';
+                                    echo htmlspecialchars(strlen($address) > 50 ? substr($address, 0, 50) . '...' : $address);
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php echo date('M d, Y', strtotime($order['order_date'])); ?>
+                                </td>
+                                <td style="font-weight: 700;">₱<?php echo number_format($order['total_amount'], 2); ?></td>
+                                <td>
+                                    <span class="status-badge status-<?php echo strtolower($order['status']); ?>">
+                                        <?php echo $order['status']; ?>
+                                    </span>
                                 </td>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <?php if ($total_pages > 1): ?>
-                <div class="pagination"
-                    style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;">
-                    <?php if ($page > 1): ?>
-                        <a href="?user_page=<?php echo $page - 1; ?>&user_search=<?php echo urlencode($search); ?>"
-                            class="btn btn-secondary" style="padding: 0.5rem 1rem;">&lt; Previous</a>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 3rem; color: #999; font-style: italic;">No
+                                orders yet</td>
+                        </tr>
                     <?php endif; ?>
-
-                    <span style="color: var(--warm-brown); font-weight: 600;">
-                        Page <?php echo $page; ?> of <?php echo $total_pages; ?>
-                    </span>
-
-                    <?php if ($page < $total_pages): ?>
-                        <a href="?user_page=<?php echo $page + 1; ?>&user_search=<?php echo urlencode($search); ?>"
-                            class="btn btn-secondary" style="padding: 0.5rem 1rem;">Next &gt;</a>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
+                </tbody>
+            </table>
         </div>
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <a href="orders.php" class="btn" style="border-radius: 12px; padding: 0.8rem 2rem;">View All Orders</a>
+        </div>
+
+        <!-- Users Table -->
+        <div
+            style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 style="font-family: 'Playfair Display', serif; margin: 0;">Registered Users</h2>
+
+            <div class="admin-controls" style="margin-bottom: 0; display: flex; gap: 1rem; align-items: center;">
+                <div class="admin-search-group" style="min-width: 250px; margin-bottom: 0; flex: none;">
+                    <div class="admin-search-input-wrapper" style="margin-bottom: 0;">
+                        <input type="text" id="userSearchInput" placeholder="Search users..." class="admin-search-input"
+                            value="<?php echo htmlspecialchars($search); ?>">
+                    </div>
+                </div>
+
+                <select id="userSortSelect" class="admin-filter-select" style="min-width: 120px;">
+                    <option value="newest" <?php echo $user_sort == 'newest' ? 'selected' : ''; ?>>Newest</option>
+                    <option value="oldest" <?php echo $user_sort == 'oldest' ? 'selected' : ''; ?>>Oldest</option>
+                    <option value="az" <?php echo $user_sort == 'az' ? 'selected' : ''; ?>>A-Z</option>
+                    <option value="za" <?php echo $user_sort == 'za' ? 'selected' : ''; ?>>Z-A</option>
+                </select>
+
+                <a href="admin_dashboard.php" class="admin-btn-clear" id="userClearBtn"
+                    style="display: <?php echo ($search || $user_sort != 'newest') ? 'inline-flex' : 'none'; ?>;">
+                    Clear
+                </a>
+            </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Joined Date</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <?php if (mysqli_num_rows($users_result) > 0): ?>
+                        <?php while ($user = mysqli_fetch_assoc($users_result)): ?>
+                            <tr>
+                                <td style="font-weight: 600;">
+                                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                        <div
+                                            style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #f0f0f0; border: 1.5px solid var(--butter); flex-shrink: 0;">
+                                            <?php if (!empty($user['profile_picture'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($user['profile_picture']); ?>" alt=""
+                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                            <?php else: ?>
+                                                <div
+                                                    style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                                                    👤</div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <span><?php echo htmlspecialchars($user['username']); ?></span>
+                                    </div>
+                                </td>
+                                <td><?php echo htmlspecialchars($user['full_name']); ?></td>
+                                <td><?php echo htmlspecialchars($user['email']); ?></td>
+                                <td style="color: #666;"><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">
+                                <?php if ($search): ?>
+                                    No users found matching "<?php echo htmlspecialchars($search); ?>"
+                                <?php else: ?>
+                                    No users registered yet
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <?php if ($total_pages > 1): ?>
+            <div class="pagination"
+                style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;">
+                <?php if ($page > 1): ?>
+                    <a href="?user_page=<?php echo $page - 1; ?>&user_search=<?php echo urlencode($search); ?>"
+                        class="btn btn-secondary" style="padding: 0.5rem 1rem;">&lt; Previous</a>
+                <?php endif; ?>
+
+                <span style="color: var(--warm-brown); font-weight: 600;">
+                    Page <?php echo $page; ?> of <?php echo $total_pages; ?>
+                </span>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?user_page=<?php echo $page + 1; ?>&user_search=<?php echo urlencode($search); ?>"
+                        class="btn btn-secondary" style="padding: 0.5rem 1rem;">Next &gt;</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </div>
     </div>
 
     <script>
@@ -1033,6 +1092,46 @@ $total_pages = ceil($total_users / $users_per_page);
                     }
                 }
             });
+        });
+
+        // === Registered Users AJAX Search ===
+        const userSearchInput = document.getElementById('userSearchInput');
+        const userSortSelect = document.getElementById('userSortSelect');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const userClearBtn = document.getElementById('userClearBtn');
+        let searchTimeout;
+
+        function fetchUsers() {
+            const search = userSearchInput.value;
+            const sort = userSortSelect.value;
+
+            // Show/hide clear button
+            if (search || sort !== 'newest') {
+                userClearBtn.style.display = 'inline-flex';
+            } else {
+                userClearBtn.style.display = 'none';
+            }
+
+            fetch(`get_users.php?user_search=${encodeURIComponent(search)}&user_sort=${sort}`)
+                .then(response => response.json())
+                .then(data => {
+                    usersTableBody.innerHTML = data.table_html;
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        }
+
+        userSearchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(fetchUsers, 300); // 300ms debounce
+        });
+
+        userSortSelect.addEventListener('change', fetchUsers);
+
+        // Prevent Enter key from submitting
+        userSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
         });
     </script>
 </body>
