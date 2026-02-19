@@ -150,7 +150,7 @@ $allowed_categories = ['Savory Pastries', 'Sweet Pastries'];
 
 <!-- Add Modal -->
 <div id="addModal" class="modal"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px);">
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); overflow-y: auto;">
     <div
         style="background: var(--card-bg); color: var(--deep-brown); width: 90%; max-width: 500px; margin: 2rem auto; padding: 2.5rem; border-radius: 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
         <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Add New Pastry</h2>
@@ -198,7 +198,7 @@ $allowed_categories = ['Savory Pastries', 'Sweet Pastries'];
 
 <!-- Edit Modal -->
 <div id="editModal" class="modal"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px);">
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); overflow-y: auto;">
     <div
         style="background: var(--card-bg); color: var(--deep-brown); width: 90%; max-width: 500px; margin: 2rem auto; padding: 2.5rem; border-radius: 20px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
         <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Edit Pastry</h2>
